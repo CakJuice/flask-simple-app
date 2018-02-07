@@ -1,0 +1,9 @@
+flask
+psycopg2
+flask-sqlalchemy
+flask-migrate
+flask-script
+wtforms
+flask-wtf
+flask-argon2
+flask-mail
