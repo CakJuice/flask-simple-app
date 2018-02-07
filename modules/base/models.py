@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+"""
+# Data model in base modules
+# @author: @CakJuice <hd.brandoz@gmail.com>
+"""
+
 import random
 import string
 from datetime import datetime
@@ -13,7 +20,7 @@ class User(db.Model, BaseModel):
 		"""
 		# Generate slug from name
 		# @param context (class): class object
-		# @return (string / None): result from helpers.generate_slug
+		# @return (string | None): result from helpers.generate_slug
 		"""
 		name = context.current_parameters.get('name')
 		if name:
@@ -59,7 +66,7 @@ class User(db.Model, BaseModel):
 	def check_password(self, raw_password):
 		"""
 		# Verify input password with password_hash
-		# @param self: Instantiate object
+		# @param self: instantiate class object
 		# @param raw_password (string): input password which to be verified
 		# @return (boolean): verify result
 		"""
@@ -71,7 +78,7 @@ class User(db.Model, BaseModel):
 		# Check user when login
 		# @param email (string): input email from user
 		# @param password (string): input password from user
-		# @return (recordset / boolean): auth result, if user found then return user data, else return false
+		# @return (recordset | boolean): auth result, if user found then return user data, else return false
 		"""
 		user = User.query.filter_by(email=email).first()
 		if user and user.check_password(password):
@@ -81,7 +88,7 @@ class User(db.Model, BaseModel):
 	def set_verified(self):
 		"""
 		# Update data status user when user verified account
-		# @param self: Instantiate object
+		# @param self: instantiate class object
 		"""
 		self.status = 1
 		self.save()
