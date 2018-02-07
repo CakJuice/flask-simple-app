@@ -17,15 +17,17 @@ def signup():
 			form.save_user()
 			flash("Signup Berhasil!", 'success')
 			return redirect(url_for('base.homepage'))
+		else:
+			flash("Terjadi kesalahan!", 'danger')
 	else:
 		form = SignupForm()
 	return render_template('base/signup.html', form=form)
 
-@base_app.route('/verify/<verify_code>')
+@base_app.route('/verify/<verify_code>/')
 def verify(verify_code):
 	user = User.query.filter_by(verify_code=verify_code, status=0).first()
 	if user is None:
-		flash("Anda tidak diperkenankan melakukan ini!", 'warning')
+		flash("Anda tidak diperkenankan melakukan ini!", 'danger')
 		return redirect(url_for('base.homepage'))
 
 	user.set_verified()
