@@ -10,9 +10,10 @@ class User(db.Model, BaseModel):
 	__tablename__ = 'cj_base_user'
 
 	def generate_slug(context):
-		params = context.current_parameters
-		if 'name' in params:
-			return slugify(User, params['name'])
+		name = context.current_parameters.get('name')
+		if name:
+			return slugify(User, name)
+		return None
 
 	def generate_verify_code(context):
 		char_list = string.ascii_uppercase + string.digits + string.ascii_lowercase
