@@ -7,6 +7,7 @@
 
 from datetime import datetime
 
+from flask import g
 from app import app, db, argon2
 from models import BaseModel
 from helpers import generate_random_string, generate_slug as slugify
@@ -36,6 +37,7 @@ class User(db.Model, BaseModel):
 	created_at = db.Column(db.DateTime, default=datetime.now)
 	updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 	last_request_at = db.Column(db.DateTime)
+	mail_outgoing_relation = db.relationship('MailOutgoing', backref='user', lazy=True)
 
 	def __init__(self, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)
@@ -80,4 +82,33 @@ class User(db.Model, BaseModel):
 		# @param self: instantiate class object
 		"""
 		self.status = 1
+		self.save()
+
+class MailOutgoing(db.Model, BaseModel):
+	__tablename__ = 'cj_base_mail_outgoing'
+
+	def get_default_user(context):
+		return g.user.id
+
+	id = db.Column(db.Integer, primary_key=True)
+	subject = db.Column(db.String(255), nullable=False)
+	email_from = db.Column(db.String(255), nullable=False)
+	email_to = db.Column(db.Text, nullable=False)
+	email_cc = db.Column(db.Text)
+	body = db.Column(db.Text, nullable=False)
+	status = db.Column(db.SmallInteger, default=0,
+		doc="-1 = canceled, 0 = outgoing, 1 = send, 2 = received, 3 = delivery failed")
+	send_at = db.Column(db.DateTime)
+	created_at = db.Column(db.DateTime, default=datetime.now)
+	updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+	created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, default=get_default_user)
+	updated_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, default=get_default_user,
+		onupdate=get_default_user)
+
+	def __str__(self):
+		return '<MailOutgoing: {}>'.format(self.subject)
+
+	def send_email(self):
+		self.status = 2
+		self.send_at = datetime.now()
 		self.save()
