@@ -1,3 +1,5 @@
+import os
+
 from flask import request
 from wtforms import validators
 from wtforms.compat import string_types
@@ -35,7 +37,7 @@ class FileAllowed(object):
 					else:
 						message = self.message
 
-					field.errors[:] = []
+					field.errors = []
 					raise validators.StopValidation(message)
 
 class MaxFileSizeAllowed(object):
@@ -57,23 +59,22 @@ class MaxFileSizeAllowed(object):
 			file_size = get_file_size(request.files[field.name]) / 1000.0
 			if file_size > self.max_size:
 				if self.message is None:
-					message = "Max. ukuran file {0} KB.".format(self.max_size,)
+					message = "Max. ukuran file {} KB.".format(self.max_size,)
 				else:
 					message = self.message
 
-				field.errors[:] = []
+				field.errors = []
 				raise validators.StopValidation(message)
 
 class SameValue(object):
-	def __init__(self, same_field=None, message=None):
+	def __init__(self, same_field, message=None):
 		"""
 		# @param same_field (string): other field name to compare value
 		# @param message (string): custom message when this validation fails
 		"""
 		if isinstance(same_field, string_types):
 			self.same_field = same_field
-		else:
-			self.same_field = None
+
 		self.message = message
 
 	def __call__(self, form, field):
