@@ -37,7 +37,6 @@ class User(db.Model, BaseModel):
 	created_at = db.Column(db.DateTime, default=datetime.now)
 	updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 	last_request_at = db.Column(db.DateTime)
-	mail_outgoing_relation = db.relationship('MailOutgoing', backref='user', lazy=True)
 
 	def __init__(self, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)
@@ -101,9 +100,10 @@ class MailOutgoing(db.Model, BaseModel):
 	send_at = db.Column(db.DateTime)
 	created_at = db.Column(db.DateTime, default=datetime.now)
 	updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-	created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, default=get_default_user)
-	updated_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, default=get_default_user,
+	created_by = db.Column(db.Integer, db.ForeignKey('{}.id'.format(User.__tablename__)), nullable=False, default=get_default_user)
+	updated_by = db.Column(db.Integer, db.ForeignKey('{}.id'.format(User.__tablename__)), nullable=False, default=get_default_user,
 		onupdate=get_default_user)
+	user = db.relationship('User', backref=db.backref('users', lazy=True))
 
 	def __str__(self):
 		return '<MailOutgoing: {}>'.format(self.subject)
