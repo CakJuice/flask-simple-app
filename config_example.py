@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+"""
+# Custom configuration of flask app
+# @author: @CakJuice <hd.brandoz@gmail.com>
+"""
+
 import os
 
 class Configuration(object):

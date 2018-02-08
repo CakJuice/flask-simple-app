@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-# Set of custom validation for flask_w
+# Set of custom validation for flask_wtf
 # @author: @CakJuice <hd.brandoz@gmail.com>
 """
 
