@@ -2,7 +2,7 @@ import wtforms
 from flask_wtf import FlaskForm
 
 from .models import User
-from validators import SameValue
+from validators import SameValue, UniqueValue
 
 validators = wtforms.validators
 
@@ -10,7 +10,8 @@ class SignupForm(FlaskForm):
 	email = wtforms.StringField("Email", validators=[
 		validators.Email(),
 		validators.DataRequired(),
-		validators.Length(max=128)
+		validators.Length(max=128),
+		UniqueValue(User, 'email')
 	])
 	name = wtforms.StringField("Name", validators=[
 		validators.DataRequired(),
