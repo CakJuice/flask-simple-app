@@ -84,16 +84,40 @@ class SameValue(object):
 		# @param field (object/class): field which has this validators
 		"""
 		if field.data and isinstance(field.data, string_types) and \
-			field.data.strip() and self.same_field is not None:
+			field.data.strip():
 				if self.same_field not in form.data:
 					message = "Terjadi kesalahan, hubungi administrator!"
-					field.errors[:] = []
+					field.errors = []
 					raise validators.StopValidation(message)
 
 				if form.data[self.same_field] != field.data:
 					if self.message is None:
-						message = "Data tidak sama dengan {0}!".format(self.same_field)
+						message = "Data tidak sama dengan {}!".format(self.same_field)
 					else:
 						message = self.message
-					field.errors[:] = []
+					field.errors = []
+					raise validators.StopValidation(message)
+
+class UniqueValue(object):
+	def __init__(self, model, field_name, message=None):
+		self.model = model
+		self.field_name = field_name
+		self.message = message
+
+	def __call__(self, form, field):
+		if not hasattr(self.model, self.field_name):
+			message = "Terjadi kesalahan, hubungi administrator!"
+			field.errors = []
+			raise validators.StopValidation(message)
+		
+		if field.data and isinstance(field.data, string_types) and \
+			field.data.strip():
+				obj = getattr(self.model, self.field_name)
+				user = self.model.query.filter(obj == field.data).first()
+				if user:
+					field.errors = []
+					if self.message is None:
+						message = "Data {} sudah ada!".format(self.field_name)
+					else:
+						message = self.message
 					raise validators.StopValidation(message)
