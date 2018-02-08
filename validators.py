@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+"""
+# Set of custom validation for flask_w
+# @author: @CakJuice <hd.brandoz@gmail.com>
+"""
+
 import os
 
 from flask import request
@@ -5,12 +12,23 @@ from wtforms import validators
 from wtforms.compat import string_types
 
 def get_file_size(file):
+	"""
+	# Get file size when uploaded file
+	# @param file (file): uploaded file
+	# @return (int): file size
+	"""
 	file.seek(0, os.SEEK_END)
 	return file.tell()
 
 class FileAllowed(object):
+	"""
+	# To set which file extension to be allowed when uploading files
+	# If file extension is not in extension list, it will be raise an exception
+	"""
+
 	def __init__(self, extensions=[], message=None):
 		"""
+		# @param self (class): instantiate class object
 		# @param extensions (list): list of allowed extension of uploaded file
 		# @oaram message (string): custom message when this validation fails
 		"""
@@ -20,7 +38,9 @@ class FileAllowed(object):
 	def __call__(self, form, field):
 		"""
 		# Call when request post data from some form
-		# @param form (object/class): form which some field has this validators 
+		# If this validation fails, it will be raise StopValidation
+		# @param self (class): instantiate class object
+		# @param form (object/class): form which some field has this validators
 		# @param field (object/class): field which has this validators
 		"""
 		if field.data and isinstance(field.data, string_types) and field.data.strip():
@@ -41,8 +61,14 @@ class FileAllowed(object):
 					raise validators.StopValidation(message)
 
 class MaxFileSizeAllowed(object):
+	"""
+	# To set max size of file when uploading files
+	# If upload file size is bigger this validations fails
+	"""
+
 	def __init__(self, max_size=0, message=None):
 		"""
+		# @param self (class): instantiate class object
 		# @param max_size (integer): size of uploaded file, in KB
 		# @param message (string): custom message when this validation fails
 		"""
@@ -52,7 +78,9 @@ class MaxFileSizeAllowed(object):
 	def __call__(self, form, field):
 		"""
 		# Call when request post data from some form
-		# @param form (object/class): form which some field has this validators 
+		# If this validation fails, it will be raise StopValidation
+		# @param self (class): instantiate class object
+		# @param form (object/class): form which some field has this validators
 		# @param field (object/class): field which has this validators
 		"""
 		if field.data and field.name in request.files:
@@ -67,8 +95,14 @@ class MaxFileSizeAllowed(object):
 				raise validators.StopValidation(message)
 
 class SameValue(object):
+	"""
+	# To check data from other field
+	# The data must be same or will raise an exception
+	"""
+
 	def __init__(self, same_field, message=None):
 		"""
+		# @param self (class): instantiate class object
 		# @param same_field (string): other field name to compare value
 		# @param message (string): custom message when this validation fails
 		"""
@@ -80,7 +114,9 @@ class SameValue(object):
 	def __call__(self, form, field):
 		"""
 		# Call when request post data from some form
-		# @param form (object/class): form which some field has this validators 
+		# If this validation fails, it will be raise StopValidation
+		# @param self (class): instantiate class object
+		# @param form (object/class): form which some field has this validators
 		# @param field (object/class): field which has this validators
 		"""
 		if field.data and isinstance(field.data, string_types) and \
@@ -100,16 +136,29 @@ class SameValue(object):
 
 class UniqueValue(object):
 	def __init__(self, model, field_name, message=None):
+		"""
+		# @param self (class): instantiate class object
+		# @param model (object/class): model class which will be checking value
+		# @param field_name (string): field name of model which will be checking value
+		# @param message (string): custom message when this validation fails
+		"""
 		self.model = model
 		self.field_name = field_name
 		self.message = message
 
 	def __call__(self, form, field):
+		"""
+		# Call when request post data from some form
+		# If this validation fails, it will be raise StopValidation
+		# @param self (class): instantiate class object
+		# @param form (object/class): form which some field has this validators
+		# @param field (object/class): field which has this validators
+		"""
 		if not hasattr(self.model, self.field_name):
 			message = "Terjadi kesalahan, hubungi administrator!"
 			field.errors = []
 			raise validators.StopValidation(message)
-		
+
 		if field.data and isinstance(field.data, string_types) and \
 			field.data.strip():
 				obj = getattr(self.model, self.field_name)
