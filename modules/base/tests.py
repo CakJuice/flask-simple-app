@@ -35,6 +35,11 @@ class BaseTest(unittest.TestCase, DummyTest):
 		}, follow_redirects=True)
 		assert 'danger' in str(response.data)
 
+	def test_post_signup_fail_email_not_unique(self):
+		self.dummy_get_signup()
+		response = self.dummy_get_signup()
+		assert 'danger' in str(response.data)
+
 	def test_post_signup_fail_password_not_same(self):
 		response = self.app.post('/signup/', data={
 			'email': 'test@test.com',
