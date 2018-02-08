@@ -1,7 +1,7 @@
 import re
 
 def slugify(raw_string):
-	return re.sub('[^\w]+', '-', raw_string).lower()
+	return re.sub(r'[^\w]+', '-', raw_string).lower()
 
 def generate_slug(cls, raw_string):
 	if not hasattr(cls, 'slug'):
