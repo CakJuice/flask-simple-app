@@ -41,7 +41,7 @@ class User(db.Model, BaseModel):
 	def __init__(self, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)
 
-	def __str__(self):
+	def __repr__(self):
 		return '<User: {}>'.format(self.name)
 
 	@staticmethod
@@ -100,12 +100,13 @@ class MailOutgoing(db.Model, BaseModel):
 	send_at = db.Column(db.DateTime)
 	created_at = db.Column(db.DateTime, default=datetime.now)
 	updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-	created_by = db.Column(db.Integer, db.ForeignKey('{}.id'.format(User.__tablename__)), nullable=False, default=get_default_user)
-	updated_by = db.Column(db.Integer, db.ForeignKey('{}.id'.format(User.__tablename__)), nullable=False, default=get_default_user,
-		onupdate=get_default_user)
+	created_by = db.Column(db.Integer, db.ForeignKey('{}.id'.format(User.__tablename__)), nullable=False,
+		default=get_default_user)
+	updated_by = db.Column(db.Integer, db.ForeignKey('{}.id'.format(User.__tablename__)), nullable=False,
+		default=get_default_user, onupdate=get_default_user)
 	user = db.relationship('User', backref=db.backref('users', lazy=True))
 
-	def __str__(self):
+	def __repr__(self):
 		return '<MailOutgoing: {}>'.format(self.subject)
 
 	def send_email(self):
