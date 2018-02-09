@@ -8,7 +8,7 @@
 from datetime import datetime
 
 from flask import g
-from app import db, argon2
+from app import db, argon2, login_manager
 from models import BaseModel
 from helpers import generate_random_string, generate_slug as slugify
 
@@ -20,6 +20,10 @@ class User(db.Model, BaseModel):
 	"""
 
 	__tablename__ = 'cj_base_user'
+
+	STATUS_DELETED = -1
+	STATUS_NOT_ACTIVE = 0
+	STATUS_ACTIVE = 1
 
 	def generate_slug(self):
 		"""
@@ -37,7 +41,8 @@ class User(db.Model, BaseModel):
 	password_hash = db.Column(db.String(255), nullable=False)
 	name = db.Column(db.String(100), nullable=False)
 	slug = db.Column(db.String(128), nullable=False, unique=True, default=generate_slug)
-	status = db.Column(db.SmallInteger, default=0, doc="1 = active, 0 = need activated, -1 = non-active")
+	status = db.Column(db.SmallInteger, default=User.STATUS_NOT_ACTIVE,
+		doc="1 = active, 0 = not active, -1 = deleted")
 	is_admin = db.Column(db.Boolean, default=False)
 	verify_code = db.Column(db.String(32), default=generate_random_string(32))
 	created_at = db.Column(db.DateTime, default=datetime.now)
@@ -50,6 +55,19 @@ class User(db.Model, BaseModel):
 
 	def __repr__(self):
 		return '<User: {}>'.format(self.name)
+
+	# flask-login interface
+	def get_id(self):
+		return self.id
+
+	def is_authenticated(self):
+		return True
+
+	def is_active(self):
+		return self.status == User.STATUS_ACTIVE
+
+	def is_anonymous(self):
+		return False
 
 	@staticmethod
 	def make_password(plaintext):
@@ -89,6 +107,10 @@ class User(db.Model, BaseModel):
 		"""
 		self.status = 1
 		self.save()
+
+@login_manager.user_loader
+def _user_loader(user_id):
+	return User.query.get(int(user_id))
 
 class MailOutgoing(db.Model, BaseModel):
 	__tablename__ = 'cj_base_mail_outgoing'

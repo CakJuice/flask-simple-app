@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_user, logout_user
 
-from .forms import SignupForm
+from .forms import SignupForm, LoginForm
 from .models import User
 
 base_app = Blueprint('base', __name__, template_folder='templates')
@@ -34,6 +35,24 @@ def verify(verify_code):
 	flash("Status anda telah diverifikasi!", 'success')
 	return redirect(url_for('base.login'))
 
-@base_app.route('/login/')
+@base_app.route('/login/', methods=['GET', 'POST'])
 def login():
-	return 'This is login page!'
+	if request.method == 'POST':
+		form = LoginForm(request.form)
+		if form.validate():
+			login_user(form.user, remember=form.remember_me.data)
+			flash("Successfully logged in as {}.".format(form.user.email), 'success')
+			return redirect(request.args.get('next', default=url_for('base.homepage')))
+	else:
+		form = LoginForm()
+	return render_template('base/login.html', form=form)
+
+@base_app.route('/logout/')
+def logout():
+	if g.user.is_authenticated:
+		logout_user()
+		flash("You have been logged out.", 'success')
+		return redirect(request.args.get('next', default=url_for('base.homepage')))
+	else:
+		flash("You're not logged in!", 'danger')
+		return redirect(url_for('base.homepage))

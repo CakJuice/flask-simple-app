@@ -1,0 +1,41 @@
+{% extends 'layouts/master.html' %}
+
+{% from 'macros/form_field_horizontal.html' import form_field %}
+
+{% block title %}Login{% endblock %}
+
+{% block content_title %}Login{% endblock %}
+
+{% block content %}
+    <form action="{{ url_for('base.login') }}" method="POST">
+        {{ form.csrf_token }}
+        {{ form_field(form.email) }}
+        {{ form_field(form.password) }}
+		<div class="form-group">
+			<div class="col-sm-9 offset-sm-3">
+				<div class="custom-control custom-checkbox">
+					{{ form.remember_me(class='custom-control-input') }}
+					<label class="custom-control-label" for="remember_me">Remember me</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<div class="col-sm-9 offset-sm-3">
+				<button type="submit" class="btn btn-primary">Log in</button>
+			</div>
+		</div>
+    </form>
+{% endblock %}
+
+{% block extra_script %}
+	<script type="text/javascript">
+		(function() {
+			'use strict';
+
+			window.addEventListener('load', function() {
+				setNavItemActive(document.getElementById('nav-item-login'));
+			}, false);
+		})();
+	</script>
+{% endblock %}

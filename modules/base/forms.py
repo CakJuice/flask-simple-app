@@ -32,3 +32,26 @@ class SignupForm(FlaskForm):
 		self.populate_obj(user)
 		user.save()
 		return user
+
+class LoginForm(FlaskForm):
+	email = wtforms.StringField("Email", validators=[
+		validators.Email(),
+		validators.DataRequired(),
+		validators.Length(max=128)
+	])
+	password = wtforms.PasswordField("Password", validators=[
+		validators.DataRequired(),
+		validators.Length(min=6, max=32)
+	])
+	remember_me = wtforms.BooleanField("Remember me", default=False)
+
+	def validate(self):
+		if not super(LoginForm, self).validate():
+			return False
+
+		self.user = User.autheticate(self.email.data, self.password.data)
+		if not self.user:
+			self.email.errors.append("Invalid email or password")
+			return False
+
+		return True
