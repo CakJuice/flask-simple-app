@@ -31,3 +31,4 @@ class SignupForm(FlaskForm):
 		user = User(password_hash=User.make_password(self.password.data))
 		self.populate_obj(user)
 		user.save()
+		return user

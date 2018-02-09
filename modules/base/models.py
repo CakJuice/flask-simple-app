@@ -43,6 +43,10 @@ class User(db.Model, BaseModel):
 	created_at = db.Column(db.DateTime, default=datetime.now)
 	updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 	last_request_at = db.Column(db.DateTime)
+	# mail_outgoing_create_by = db.relationship('MailOutgoing', backref='mail_outgoing_created_by',
+	# 	lazy='dynamic', foreign_keys='{}.created_by'.format(MailOutgoing.__tablename__))
+	# mail_outgoing_update_by = db.relationship('MailOutgoing', backref='mail_outgoing_update_by',
+	# 	lazy='dynamic', foreign_keys='{}.update_by'.format(MailOutgoing.__tablename__))
 
 	def __repr__(self):
 		return '<User: {}>'.format(self.name)
@@ -107,7 +111,6 @@ class MailOutgoing(db.Model, BaseModel):
 		default=get_default_user)
 	updated_by = db.Column(db.Integer, db.ForeignKey('{}.id'.format(User.__tablename__)), nullable=False,
 		default=get_default_user, onupdate=get_default_user)
-	user = db.relationship('User', backref=db.backref('users', lazy=True))
 
 	def __repr__(self):
 		return '<MailOutgoing: {}>'.format(self.subject)
