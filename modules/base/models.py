@@ -88,7 +88,7 @@ class User(db.Model, BaseModel):
 			raw_password {String} -- Input password which to be verified
 
 		Returns:
-			Boolean -- Verify resul
+			Boolean -- Verify result
 		"""
 		return argon2.check_password_hash(self.password_hash, raw_password)
 
