@@ -13,10 +13,7 @@ from models import BaseModel
 from helpers import generate_random_string, generate_slug as slugify
 
 class User(db.Model, BaseModel):
-	"""
-	# User model
-	# @inherit db.Model from flask_sqlalchemy
-	# @inherit BaseModel from models.py
+	"""User model, mixin inherit db.Model from flask_sqlalchemy & BaseModel from models.py
 	"""
 
 	__tablename__ = 'cj_base_user'
@@ -31,7 +28,6 @@ class User(db.Model, BaseModel):
 		Returns:
 			Boolean|None -- Result from helpers.generate_slug
 		"""
-
 		name = self.current_parameters.get('name')
 		if name:
 			return slugify(User, name)
@@ -83,30 +79,29 @@ class User(db.Model, BaseModel):
 		Returns:
 			String -- Hash result
 		"""
-
-		"""
-		# Create hash password from plaintext
-		# @param plaintext (string): plaintext which to be hashed
-		# @return (string): hash result
-		"""
 		return argon2.generate_password_hash(plaintext)
 
 	def check_password(self, raw_password):
-		"""
-		# Verify input password with password_hash
-		# @param self: instantiate class object
-		# @param raw_password (string): input password which to be verified
-		# @return (boolean): verify result
+		"""Verify input password with password_hash
+
+		Arguments:
+			raw_password {String} -- Input password which to be verified
+
+		Returns:
+			Boolean -- Verify resul
 		"""
 		return argon2.check_password_hash(self.password_hash, raw_password)
 
 	@staticmethod
 	def authenticate(email, password):
-		"""
-		# Check user when login
-		# @param email (string): input email from user
-		# @param password (string): input password from user
-		# @return (recordset | boolean): auth result, if user found then return user data, else return false
+		"""Check user authenticate when login
+
+		Arguments:
+			email {String} -- Input email from user
+			password {String} -- Input password from user
+
+		Returns:
+			Recordset|Boolean -- Auth result, if user found then return user data, else return false
 		"""
 		user = User.query.filter_by(email=email).first()
 		if user and user.check_password(password):
@@ -114,9 +109,7 @@ class User(db.Model, BaseModel):
 		return False
 
 	def set_verified(self):
-		"""
-		# Update data status user when user verified account
-		# @param self: instantiate class object
+		"""Update data status user when user verified account
 		"""
 		self.status = 1
 		self.save()
