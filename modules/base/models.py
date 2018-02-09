@@ -8,11 +8,17 @@
 from datetime import datetime
 
 from flask import g
-from app import app, db, argon2
+from app import db, argon2
 from models import BaseModel
 from helpers import generate_random_string, generate_slug as slugify
 
 class User(db.Model, BaseModel):
+	"""
+	# User model
+	# @inherit db.Model from flask_sqlalchemy
+	# @inherit BaseModel from models.py
+	"""
+
 	__tablename__ = 'cj_base_user'
 
 	def generate_slug(self):
@@ -37,9 +43,6 @@ class User(db.Model, BaseModel):
 	created_at = db.Column(db.DateTime, default=datetime.now)
 	updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 	last_request_at = db.Column(db.DateTime)
-
-	def __init__(self, *args, **kwargs):
-		super(User, self).__init__(*args, **kwargs)
 
 	def __repr__(self):
 		return '<User: {}>'.format(self.name)
