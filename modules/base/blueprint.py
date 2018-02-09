@@ -55,4 +55,4 @@ def logout():
 		return redirect(request.args.get('next', default=url_for('base.homepage')))
 	else:
 		flash("You're not logged in!", 'danger')
-		return redirect(url_for('base.homepage))
+		return redirect(url_for('base.homepage'))

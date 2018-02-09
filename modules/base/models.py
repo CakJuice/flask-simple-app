@@ -26,11 +26,12 @@ class User(db.Model, BaseModel):
 	STATUS_ACTIVE = 1
 
 	def generate_slug(self):
+		"""Generate slug from name value
+
+		Returns:
+			Boolean|None -- Result from helpers.generate_slug
 		"""
-		# Generate slug from name
-		# @param self (class): class object
-		# @return (string | None): result from helpers.generate_slug
-		"""
+
 		name = self.current_parameters.get('name')
 		if name:
 			return slugify(User, name)
@@ -41,7 +42,7 @@ class User(db.Model, BaseModel):
 	password_hash = db.Column(db.String(255), nullable=False)
 	name = db.Column(db.String(100), nullable=False)
 	slug = db.Column(db.String(128), nullable=False, unique=True, default=generate_slug)
-	status = db.Column(db.SmallInteger, default=User.STATUS_NOT_ACTIVE,
+	status = db.Column(db.SmallInteger, default=STATUS_NOT_ACTIVE,
 		doc="1 = active, 0 = not active, -1 = deleted")
 	is_admin = db.Column(db.Boolean, default=False)
 	verify_code = db.Column(db.String(32), default=generate_random_string(32))
@@ -54,6 +55,9 @@ class User(db.Model, BaseModel):
 	# 	lazy='dynamic', foreign_keys='{}.update_by'.format(MailOutgoing.__tablename__))
 
 	def __repr__(self):
+		"""Representation name
+		"""
+
 		return '<User: {}>'.format(self.name)
 
 	# flask-login interface
@@ -71,6 +75,15 @@ class User(db.Model, BaseModel):
 
 	@staticmethod
 	def make_password(plaintext):
+		"""Create hash password from plaintext
+
+		Arguments:
+			plaintext {String} -- Plaintext which to be hashed
+
+		Returns:
+			String -- Hash result
+		"""
+
 		"""
 		# Create hash password from plaintext
 		# @param plaintext (string): plaintext which to be hashed
@@ -115,7 +128,7 @@ def _user_loader(user_id):
 class MailOutgoing(db.Model, BaseModel):
 	__tablename__ = 'cj_base_mail_outgoing'
 
-	def get_default_user(context):
+	def get_default_user(self):
 		return g.user.id
 
 	id = db.Column(db.Integer, primary_key=True)
