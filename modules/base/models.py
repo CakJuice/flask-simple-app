@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-"""
-# Data model in base modules
-# @author: @CakJuice <hd.brandoz@gmail.com>
+"""Models in base modules
+
+Author:
+	@CakJuice <hd.brandoz@gmail.com>
 """
 
 from datetime import datetime

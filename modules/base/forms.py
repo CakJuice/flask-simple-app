@@ -1,12 +1,23 @@
+# -*- coding: utf-8 -*-
+
+"""Forms in base modules
+
+Author:
+	@CakJuice <hd.brandoz@gmail.com>
+"""
+
 import wtforms
 from flask_wtf import FlaskForm
 
-from .models import User
 from validators import SameValue, UniqueValue
+from .models import User
 
 validators = wtforms.validators
 
 class SignupForm(FlaskForm):
+	"""To handle Signup user form
+	"""
+
 	email = wtforms.StringField("Email", validators=[
 		validators.Email(),
 		validators.DataRequired(),
@@ -28,12 +39,21 @@ class SignupForm(FlaskForm):
 	])
 
 	def save_user(self):
+		"""To save user when signup is valid
+
+		Returns:
+			Recordset -- Result of create user
+		"""
+
 		user = User(password_hash=User.make_password(self.password.data))
 		self.populate_obj(user)
 		user.save()
 		return user
 
 class LoginForm(FlaskForm):
+	"""To handle Signup user form
+	"""
+
 	email = wtforms.StringField("Email", validators=[
 		validators.Email(),
 		validators.DataRequired(),
@@ -45,7 +65,24 @@ class LoginForm(FlaskForm):
 	])
 	remember_me = wtforms.BooleanField("Remember me", default=False)
 
+	def __init__(self, *args, **kwargs):
+		"""Initialize LoginForm. Override from FlaskForm __init__
+
+		Arguments:
+			*args -- Passed arguments
+			**kwargs -- Passed keyword arguments
+		"""
+
+		self.user = None
+		super(LoginForm, self).__init__(*args, **kwargs)
+
 	def validate(self):
+		"""Validate login data. Override from FlaskForm validate()
+
+		Returns:
+			Boolean -- Return validation result
+		"""
+
 		if not super(LoginForm, self).validate():
 			return False
 
