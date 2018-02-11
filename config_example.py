@@ -9,6 +9,7 @@ import os
 
 class Configuration(object):
 	# flask config
+	SERVER_NAME = 'your_server_name'
 	APPLICATION_DIR = os.path.dirname(os.path.realpath(__file__))
 	DEBUG = True
 	STATIC_DIR = os.path.join(APPLICATION_DIR, 'static')

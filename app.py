@@ -25,4 +25,10 @@ login_manager.login_view = 'base.login'
 
 @app.before_request
 def _before_request():
+    """Auto call before page requested
+
+    Decorators:
+        app.before_request
+    """
+
     g.user = current_user

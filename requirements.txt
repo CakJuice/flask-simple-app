@@ -7,3 +7,4 @@ wtforms
 flask-wtf
 flask-argon2
 flask-mail
+flask-login

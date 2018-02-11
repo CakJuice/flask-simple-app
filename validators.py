@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-"""
-# Set of custom validation for flask_wtf
-# @author: @CakJuice <hd.brandoz@gmail.com>
+"""Set of custom validation for flask_wtf
+
+Author:
+	@CakJuice <hd.brandoz@gmail.com>
 """
 
 import os
@@ -12,36 +13,42 @@ from wtforms import validators
 from wtforms.compat import string_types
 
 def get_file_size(file):
-	"""
-	# Get file size when uploaded file
-	# @param file (file): uploaded file
-	# @return (int): file size
+	"""Get file size when uploaded file
+
+	Arguments:
+		file {File} -- Uploaded file
+
+	Returns:
+		Int -- File size
 	"""
 	file.seek(0, os.SEEK_END)
 	return file.tell()
 
 class FileAllowed(object):
-	"""
-	# To set which file extension to be allowed when uploading files
-	# If file extension is not in extension list, it will be raise an exception
+	"""To set which file extension to be allowed when uploading files. \
+If file extension is not in extension list, it will be raise an exception
 	"""
 
 	def __init__(self, extensions=[], message=None):
-		"""
-		# @param self (class): instantiate class object
-		# @param extensions (list): list of allowed extension of uploaded file
-		# @oaram message (string): custom message when this validation fails
+		"""Instantiate class object
+
+		Keyword Arguments:
+			extensions {List} -- List of allowed extension of uploaded file (default: {[]})
+			message {String} -- Custom message when this validation fails (default: {None})
 		"""
 		self.extensions = extensions
 		self.message = message
 
 	def __call__(self, form, field):
-		"""
-		# Call when request post data from some form
-		# If this validation fails, it will be raise StopValidation
-		# @param self (class): instantiate class object
-		# @param form (object/class): form which some field has this validators
-		# @param field (object/class): field which has this validators
+		"""Call when request post data from some form. \
+If this validation fails, it will be raise StopValidation
+
+		Arguments:
+			form {Object/Class} -- Form which some field has this validators
+			field {Object/Class} -- Field which has this validators
+
+		Raises:
+			validators.StopValidation -- Raise when validation fails
 		"""
 		if field.data and isinstance(field.data, string_types) and field.data.strip():
 			if len(self.extensions) > 0:
@@ -61,27 +68,30 @@ class FileAllowed(object):
 					raise validators.StopValidation(message)
 
 class MaxFileSizeAllowed(object):
-	"""
-	# To set max size of file when uploading files
-	# If upload file size is bigger this validations fails
+	"""To set max size of file when uploading files. \
+If upload file size is bigger this validations fails
 	"""
 
 	def __init__(self, max_size=0, message=None):
-		"""
-		# @param self (class): instantiate class object
-		# @param max_size (integer): size of uploaded file, in KB
-		# @param message (string): custom message when this validation fails
+		"""Instantiate class object
+
+		Keyword Arguments:
+			max_size {Int} -- Size of uploaded file, in KB (defualt: {0})
+			message {String} -- Custom message when this validation fails (default: {None})
 		"""
 		self.max_size = max_size
 		self.message = message
 
 	def __call__(self, form, field):
-		"""
-		# Call when request post data from some form
-		# If this validation fails, it will be raise StopValidation
-		# @param self (class): instantiate class object
-		# @param form (object/class): form which some field has this validators
-		# @param field (object/class): field which has this validators
+		"""Call when request post data from some form. \
+If this validation fails, it will be raise StopValidation
+
+		Arguments:
+			form {Object/Class} -- Form which some field has this validators
+			field {Object/Class} -- Field which has this validators
+
+		Raises:
+			validators.StopValidation -- Raise when validation fails
 		"""
 		if field.data and field.name in request.files:
 			file_size = get_file_size(request.files[field.name]) / 1000.0
@@ -95,16 +105,16 @@ class MaxFileSizeAllowed(object):
 				raise validators.StopValidation(message)
 
 class SameValue(object):
-	"""
-	# To check data from other field
-	# The data must be same or will raise an exception
+	"""To check data from other field. \
+The data must be same or will raise an exception
 	"""
 
 	def __init__(self, same_field, message=None):
-		"""
-		# @param self (class): instantiate class object
-		# @param same_field (string): other field name to compare value
-		# @param message (string): custom message when this validation fails
+		"""Instantiate class object
+
+		Keyword Arguments:
+			same_field {String} -- Other field name to compare value
+			message {String} -- Custom message when this validation fails (default: {None})
 		"""
 		if isinstance(same_field, string_types):
 			self.same_field = same_field
@@ -112,12 +122,15 @@ class SameValue(object):
 		self.message = message
 
 	def __call__(self, form, field):
-		"""
-		# Call when request post data from some form
-		# If this validation fails, it will be raise StopValidation
-		# @param self (class): instantiate class object
-		# @param form (object/class): form which some field has this validators
-		# @param field (object/class): field which has this validators
+		"""Call when request post data from some form. \
+If this validation fails, it will be raise StopValidation
+
+		Arguments:
+			form {Object/Class} -- Form which some field has this validators
+			field {Object/Class} -- Field which has this validators
+
+		Raises:
+			validators.StopValidation -- Raise when validation fails
 		"""
 		if field.data and isinstance(field.data, string_types) and \
 			field.data.strip():
@@ -136,23 +149,27 @@ class SameValue(object):
 
 class UniqueValue(object):
 	def __init__(self, model, field_name, message=None):
-		"""
-		# @param self (class): instantiate class object
-		# @param model (object/class): model class which will be checking value
-		# @param field_name (string): field name of model which will be checking value
-		# @param message (string): custom message when this validation fails
+		"""Instantiate class object
+
+		Keyword Arguments:
+			model {Object/Class} -- Model class which will be checking value
+			field_name {String} -- Field name of model which will be checking value
+			message {String} -- Custom message when this validation fails (default: {None})
 		"""
 		self.model = model
 		self.field_name = field_name
 		self.message = message
 
 	def __call__(self, form, field):
-		"""
-		# Call when request post data from some form
-		# If this validation fails, it will be raise StopValidation
-		# @param self (class): instantiate class object
-		# @param form (object/class): form which some field has this validators
-		# @param field (object/class): field which has this validators
+		"""Call when request post data from some form. \
+If this validation fails, it will be raise StopValidation
+
+		Arguments:
+			form {Object/Class} -- Form which some field has this validators
+			field {Object/Class} -- Field which has this validators
+
+		Raises:
+			validators.StopValidation -- Raise when validation fails
 		"""
 		if not hasattr(self.model, self.field_name):
 			message = "Terjadi kesalahan, hubungi administrator!"
