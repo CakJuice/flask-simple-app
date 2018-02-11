@@ -7,9 +7,11 @@ Author:
 """
 
 from datetime import datetime
+from smtplib import SMTPException
 
-from flask import g
-from app import db, argon2, login_manager
+from flask import url_for
+from flask_mail import Message
+from app import app, db, argon2, login_manager, mail
 from models import BaseModel
 from helpers import generate_random_string, generate_slug as slugify
 
@@ -115,36 +117,90 @@ class User(db.Model, BaseModel):
 		self.status = 1
 		self.save()
 
+	def resend_verification_mail(self):
+		"""Generate new verification code then resend verification mail
+		"""
+
+		self.verify_code = generate_random_string(32)
+		self.save()
+		self.send_verification_mail()
+
+	def send_verification_mail(self):
+		"""Sending verification email after user signup.
+		"""
+
+		body = """Hi, {0}.
+Terima kasih sudah medaftarkan diri disini.
+Silahkan buka link {1} untuk verifikasi pendaftaran.
+
+Terima kasih.
+		""".format(self.name, url_for('base.verify', verify_code=self.verify_code, _external=True))
+
+		body_html = """<p>Hi, {0}</p>
+<p>Terima kasih sudah mendaftarkan diri disini.</p>
+<p>Silahkan buka link <a href="{1}" target="_blank">{1}</a> untuk verifikasi pendaftaran.</p>
+<br>
+<p>Terima kasih.</p>
+		"""
+
+		outgoing_mail = MailOutgoing(
+			subject="Verifikasi Pendaftaran User",
+			email_to=self.email,
+			body=body,
+			body_html=body_html
+		)
+		outgoing_mail.send_email()
+
 @login_manager.user_loader
 def _user_loader(user_id):
 	return User.query.get(int(user_id))
 
 class MailOutgoing(db.Model, BaseModel):
+	"""MailOutgoing model, mixin inherit db.Model from flask_sqlalchemy & BaseModel from models.py
+	"""
+
 	__tablename__ = 'cj_base_mail_outgoing'
 
-	def get_default_user(self):
-		return g.user.id
+	STATUS_CANCELED = -1
+	STATUS_OUTGOING = 0
+	STATUS_SEND = 1
+	STATUS_RECEIVED = 2
+	STATUS_FAILED = 3
 
 	id = db.Column(db.Integer, primary_key=True)
 	subject = db.Column(db.String(255), nullable=False)
-	email_from = db.Column(db.String(255), nullable=False)
+	email_from = db.Column(db.String(255), nullable=False, default=app.config['MAIL_USERNAME'])
 	email_to = db.Column(db.Text, nullable=False)
 	email_cc = db.Column(db.Text)
 	body = db.Column(db.Text, nullable=False)
-	status = db.Column(db.SmallInteger, default=0,
+	body_html = db.Column(db.Text)
+	status = db.Column(db.SmallInteger, default=STATUS_OUTGOING,
 		doc="-1 = canceled, 0 = outgoing, 1 = send, 2 = received, 3 = delivery failed")
 	send_at = db.Column(db.DateTime)
 	created_at = db.Column(db.DateTime, default=datetime.now)
 	updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-	created_by = db.Column(db.Integer, db.ForeignKey('{}.id'.format(User.__tablename__)), nullable=False,
-		default=get_default_user)
-	updated_by = db.Column(db.Integer, db.ForeignKey('{}.id'.format(User.__tablename__)), nullable=False,
-		default=get_default_user, onupdate=get_default_user)
 
 	def __repr__(self):
+		"""Representation name
+		"""
 		return '<MailOutgoing: {}>'.format(self.subject)
 
 	def send_email(self):
-		self.status = 2
-		self.send_at = datetime.now()
-		self.save()
+		"""Sending email then update status to STATUS_SEND when success
+		"""
+		message = Message(
+			subject=self.subject,
+			body=self.body,
+			html=self.body_html,
+			sender=self.email_from,
+			recipients=[self.email_to]
+		)
+
+		try:
+			mail.send(message)
+			self.status = self.STATUS_SEND
+			self.send_at = datetime.now()
+			self.save()
+		except SMTPException:
+			self.status = self.STATUS_FAILED
+			self.save()

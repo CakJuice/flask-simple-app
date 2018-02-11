@@ -17,7 +17,7 @@ class DummyTest(object):
 
 	def dummy_get_signup(self):
 		return self.app.post('/signup/', data={
-			'email': 'test@testing.com',
+			'email': 'hello@cakjuice.com',
 			'name': 'Cak Juice',
 			'password': 'cakjuice',
 			'password_confirm': 'cakjuice'

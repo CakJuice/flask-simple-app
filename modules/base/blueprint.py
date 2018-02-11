@@ -15,7 +15,8 @@ def signup():
 	if request.method == 'POST':
 		form = SignupForm(request.form)
 		if form.validate():
-			form.save_user()
+			user = form.save_user()
+			user.send_verification_mail()
 			flash("Signup Berhasil!", 'success')
 			return redirect(url_for('base.homepage'))
 		else:
