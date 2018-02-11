@@ -12,6 +12,15 @@ def homepage():
 
 @base_app.route('/signup/', methods=['GET', 'POST'])
 def signup():
+	"""Handle route user signup
+
+	Decorators:
+		base_app.route('/signup/', methods=['GET', 'POST'])
+
+	Returns:
+		Template|Redirect -- If method 'GET' will render template, but if method 'POST' and valid \
+will redirect to 'base.homepage'
+	"""
 	if request.method == 'POST':
 		form = SignupForm(request.form)
 		if form.validate():
@@ -27,6 +36,18 @@ def signup():
 
 @base_app.route('/verify/<verify_code>/')
 def verify(verify_code):
+	"""Handle route user verification account
+
+	Decorators:
+		base_app.route('/verify/<verify_code>/')
+
+	Arguments:
+		verify_code {String} -- Verification code to be checked
+
+	Returns:
+		Redirect -- Redirecting user after verify. If valid, user redirect to 'base.login'. \
+If not valid, user redirect to 'base.homepage' and get error message.
+	"""
 	user = User.query.filter_by(verify_code=verify_code, status=User.STATUS_NOT_ACTIVE).first()
 	if user is None:
 		flash("Anda tidak diperkenankan melakukan ini!", 'danger')
@@ -38,6 +59,15 @@ def verify(verify_code):
 
 @base_app.route('/resend-verify/', methods=['GET', 'POST'])
 def resend_verify():
+	"""Handle route user resend verification account
+
+	Decorators:
+		base_app.route('/resend-verify/', methods=['GET', 'POST'])
+
+	Returns:
+		Template|Redirect -- If method 'GET' will render template, but if method 'POST' and valid \
+will redirect to 'base.homepage'
+	"""
 	if request.method == 'POST':
 		form = ResendVerifyForm(request.form)
 		if form.validate():
@@ -52,6 +82,15 @@ def resend_verify():
 
 @base_app.route('/login/', methods=['GET', 'POST'])
 def login():
+	"""Handle route user login
+
+	Decorators:
+		base_app.route('/login/', methods=['GET', 'POST'])
+
+	Returns:
+		Template|Redirect -- If method 'GET' will render template, but if method 'POST' and valid \
+will redirect to 'base.homepage'
+	"""
 	if request.method == 'POST':
 		form = LoginForm(request.form)
 		if form.validate():
@@ -64,6 +103,14 @@ def login():
 
 @base_app.route('/logout/')
 def logout():
+	"""Handle route user logout
+
+	Decorators:
+		base_app.route('/logout/')
+
+	Returns:
+		Redirect -- If valid redirect to next arguments or 'base/homepage'
+	"""
 	if g.user.is_authenticated:
 		logout_user()
 		flash("You have been logged out.", 'success')
