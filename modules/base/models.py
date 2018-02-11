@@ -106,7 +106,7 @@ class User(db.Model, BaseModel):
 		Returns:
 			Recordset|Boolean -- Auth result, if user found then return user data, else return false
 		"""
-		user = User.query.filter_by(email=email).first()
+		user = User.query.filter_by(email=email, status=User.STATUS_ACTIVE).first()
 		if user and user.check_password(password):
 			return user
 		return False
@@ -114,7 +114,7 @@ class User(db.Model, BaseModel):
 	def set_verified(self):
 		"""Update data status user when user verified account
 		"""
-		self.status = 1
+		self.status = User.STATUS_ACTIVE
 		self.save()
 
 	def resend_verification_mail(self):
