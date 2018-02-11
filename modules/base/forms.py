@@ -92,3 +92,49 @@ class LoginForm(FlaskForm):
 			return False
 
 		return True
+
+class ResendVerifyForm(FlaskForm):
+	"""To handle resend verification form
+	"""
+
+	email = wtforms.StringField("Email", validators=[
+		validators.Email(),
+		validators.DataRequired(),
+		validators.Length(max=128)
+	])
+
+	def __init__(self, *args, **kwargs):
+		"""Initialize LoginForm. Override from FlaskForm __init__
+
+		Arguments:
+			*args -- Passed arguments
+			**kwargs -- Passed keyword arguments
+		"""
+
+		self.user = None
+		super(ResendVerifyForm, self).__init__(*args, **kwargs)
+
+	def validate(self):
+		"""Validate resend verification data. Override from FlaskForm validate()
+
+		Returns:
+			Boolean -- Return validation result
+		"""
+
+		if not super(ResendVerifyForm, self).validate():
+			return False
+
+		has_error = False
+		self.user = User.query.filter_by(email=self.email.data).first()
+		if self.user is None:
+			self.email.errors.append("Email not found!")
+			has_error = True
+		else:
+			if self.user.status == User.STATUS_ACTIVE:
+				self.email.errors.append("User has been activated!")
+				has_error = True
+			elif self.user.status == User.STATUS_DELETED:
+				self.email.errors.append("User has been deleted!")
+				has_error = True
+
+		return not has_error

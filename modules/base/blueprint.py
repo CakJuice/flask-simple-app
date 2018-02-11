@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g
 from flask_login import login_user, logout_user
 
-from .forms import SignupForm, LoginForm
+from .forms import SignupForm, LoginForm, ResendVerifyForm
 from .models import User
 
 base_app = Blueprint('base', __name__, template_folder='templates')
@@ -17,7 +17,7 @@ def signup():
 		if form.validate():
 			user = form.save_user()
 			user.send_verification_mail()
-			flash("Signup Berhasil!", 'success')
+			flash("Signup success. Please check your email to verify your account.", 'success')
 			return redirect(url_for('base.homepage'))
 		else:
 			flash("Terjadi kesalahan!", 'danger')
@@ -35,6 +35,20 @@ def verify(verify_code):
 	user.set_verified()
 	flash("Status anda telah diverifikasi!", 'success')
 	return redirect(url_for('base.login'))
+
+@base_app.route('/resend-verify/', methods=['GET', 'POST'])
+def resend_verify():
+	if request.method == 'POST':
+		form = ResendVerifyForm(request.form)
+		if form.validate():
+			form.user.resend_verification_mail()
+			flash("Verification link has been send. Please check your email.", 'success')
+			return redirect(url_for('base.homepage'))
+		else:
+			flash("Terjadi kesalahan!", 'danger')
+	else:
+		form = ResendVerifyForm()
+	return render_template('base/resend_verify.html', form=form)
 
 @base_app.route('/login/', methods=['GET', 'POST'])
 def login():
