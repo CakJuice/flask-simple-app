@@ -86,7 +86,7 @@ class LoginForm(FlaskForm):
 		if not super(LoginForm, self).validate():
 			return False
 
-		self.user = User.autheticate(self.email.data, self.password.data)
+		self.user = User.authenticate(self.email.data, self.password.data)
 		if not self.user:
 			self.email.errors.append("Invalid email or password")
 			return False
