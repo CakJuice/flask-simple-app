@@ -27,7 +27,7 @@ def signup():
 
 @base_app.route('/verify/<verify_code>/')
 def verify(verify_code):
-	user = User.query.filter_by(verify_code=verify_code, status=0).first()
+	user = User.query.filter_by(verify_code=verify_code, status=User.STATUS_NOT_ACTIVE).first()
 	if user is None:
 		flash("Anda tidak diperkenankan melakukan ini!", 'danger')
 		return redirect(url_for('base.homepage'))
