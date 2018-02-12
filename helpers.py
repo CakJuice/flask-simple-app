@@ -8,7 +8,7 @@ Author:
 
 import re
 import string
-import random
+from random import choice, shuffle
 
 def slugify(raw_string):
 	"""Get slug string pattern
@@ -57,4 +57,8 @@ def generate_random_string(length):
 		String -- Random result
 	"""
 	char_list = string.ascii_uppercase + string.digits + string.ascii_lowercase
-	return ''.join(random.choice(char_list) for _ in range(length))
+	rand = ''.join(choice(char_list) for _ in range(length))
+	print(rand)
+	return rand
+	# rand = [choice(char_list) for _ in range(length)]
+	# shuffle(rand)

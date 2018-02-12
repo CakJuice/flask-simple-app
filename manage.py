@@ -8,7 +8,8 @@ Author:
 
 from app import manager
 from main import *
-from modules.base.models import User
+from modules.base.models.user import User
+from modules.base.models.mail import MailOutgoing
 
 if __name__ == '__main__':
 	manager.run()

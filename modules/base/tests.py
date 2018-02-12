@@ -1,8 +1,8 @@
 import unittest
 
 from main import app
-from .models import User
 from test_helpers import DummyTest
+from .models.user import User
 
 class BaseTest(unittest.TestCase, DummyTest):
 	def setUp(self):

@@ -1,8 +1,16 @@
+# -*- coding: utf-8 -*-
+
+"""To handle all route in base modules
+
+Author:
+	@CakJuice <hd.brandoz@gmail.com>
+"""
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g
 from flask_login import login_user, logout_user
 
 from .forms import SignupForm, LoginForm, ResendVerifyForm
-from .models import User
+from .models.user import User
 
 base_app = Blueprint('base', __name__, template_folder='templates')
 
@@ -25,7 +33,8 @@ will redirect to 'base.homepage'
 		form = SignupForm(request.form)
 		if form.validate():
 			user = form.save_user()
-			user.send_verification_mail()
+			if not user.is_admin:
+				user.send_verification_mail()
 			flash("Signup success. Please check your email to verify your account.", 'success')
 			return redirect(url_for('base.homepage'))
 		else:

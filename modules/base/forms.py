@@ -10,7 +10,7 @@ import wtforms
 from flask_wtf import FlaskForm
 
 from validators import SameValue, UniqueValue
-from .models import User
+from .models.user import User
 
 validators = wtforms.validators
 
