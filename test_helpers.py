@@ -22,15 +22,28 @@ class DummyTest(object):
 		"""
 		os.unlink(self.test_db)
 
-	def dummy_get_signup(self):
+	def dummy_get_signup1(self):
 		"""Data dummy for signup test
 
 		Returns:
 			Object -- Post data dummy
 		"""
 		return self.app.post('/signup/', data={
+			'email': 'support@cakjuice.com',
+			'name': 'Support Cak Juice',
+			'password': 'cakjuice',
+			'password_confirm': 'cakjuice'
+		}, follow_redirects=True)
+
+	def dummy_get_signup2(self):
+		"""Data dummy 2 for signup test
+
+		Returns:
+			Object -- Post data dummy
+		"""
+		return self.app.post('/signup/', data={
 			'email': 'hello@cakjuice.com',
-			'name': 'Cak Juice',
+			'name': 'Hello Cak Juice',
 			'password': 'cakjuice',
 			'password_confirm': 'cakjuice'
 		}, follow_redirects=True)
