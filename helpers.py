@@ -6,9 +6,9 @@ Author:
 	@CakJuice <hd.brandoz@gmail.com>
 """
 
-import re
-import string
-from random import choice, shuffle
+from re import sub
+from string import ascii_uppercase, ascii_lowercase, digits
+from random import choice
 
 def slugify(raw_string):
 	"""Get slug string pattern
@@ -19,7 +19,7 @@ def slugify(raw_string):
 	Returns:
 		String -- Result of slug string
 	"""
-	return re.sub(r'[^\w]+', '-', raw_string).lower()
+	return sub(r'[^\w]+', '-', raw_string).lower()
 
 def generate_slug(cls, raw_string):
 	"""Get slug string pattern. First must check to database, because slug usually unique. \
@@ -56,9 +56,5 @@ def generate_random_string(length):
 	Returns:
 		String -- Random result
 	"""
-	char_list = string.ascii_uppercase + string.digits + string.ascii_lowercase
-	rand = ''.join(choice(char_list) for _ in range(length))
-	print(rand)
-	return rand
-	# rand = [choice(char_list) for _ in range(length)]
-	# shuffle(rand)
+	char_list = ascii_uppercase + digits + ascii_lowercase
+	return ''.join(choice(char_list) for _ in range(length))
