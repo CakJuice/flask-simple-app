@@ -26,3 +26,4 @@ class Configuration(object):
 	MAIL_USE_SSL = True
 	MAIL_USERNAME = 'your_mail_username'
 	MAIL_PASSWORD = 'your_mail_password'
+	MAIL_DEFAULT_SENDER = 'your_default_sender'
