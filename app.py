@@ -1,10 +1,10 @@
 from flask import Flask, g
-from flask_sqlalchemy import SQLAlchemy
+from flask_argon2 import Argon2
+from flask_login import LoginManager, current_user
+from flask_mail import Mail
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
-from flask_argon2 import Argon2
-from flask_mail import Mail
-from flask_login import LoginManager, current_user
+from flask_sqlalchemy import SQLAlchemy
 
 from settings import Configuration
 
@@ -22,6 +22,7 @@ mail = Mail(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'base.login'
+
 
 @app.before_request
 def _before_request():

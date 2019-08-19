@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
 
-"""User model in base modules
+""" User model in base modules
 
-Author:
-	@CakJuice <hd.brandoz@gmail.com>
+Author: @CakJuice <hd.brandoz@gmail.com>
 """
 
 from datetime import datetime
 
 from flask import url_for
+
 from app import db, argon2, login_manager
-from models import BaseModel
 from helpers import generate_random_string, generate_slug as slugify
+from models import BaseModel
+from settings import Configuration
+
 
 class User(db.Model, BaseModel):
-    """User model, mixin inherit `db.Model` from `flask_sqlalchemy` & `BaseModel` from models.py
+    """ User model, mixin inherit `db.Model` from `flask_sqlalchemy` & `BaseModel` from models.py
     """
 
-    __tablename__ = 'cj_base_user'
+    __tablename__ = Configuration.TABLE_PREFIX + 'base_user'
 
     STATUS_DELETED = -1
     STATUS_NOT_ACTIVE = 0
@@ -76,17 +78,16 @@ Terima kasih.
     name = db.Column(db.String(100), nullable=False)
     slug = db.Column(db.String(128), nullable=False, unique=True, default=generate_slug)
     is_admin = db.Column(db.Boolean, default=check_status_admin)
-    status = db.Column(db.SmallInteger, default=check_status_active,
-        doc="1 = active, 0 = not active, -1 = deleted")
+    status = db.Column(db.SmallInteger, default=check_status_active, doc="1 = active, 0 = not active, -1 = deleted")
     verify_code = db.Column(db.String(32), default=lambda: generate_random_string(32))
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-    last_request_at = db.Column(db.DateTime)
+    last_login_at = db.Column(db.DateTime)
 
     def __repr__(self):
         """Representation name
         """
-        return '<User: {}>'.format(self.name)
+        return '<User: %s>' % self.name
 
     # flask-login interface
     def get_id(self):
@@ -151,22 +152,23 @@ Terima kasih.
         """
         self.verify_code = generate_random_string(32)
         self.save()
-        self.send_verification_mail()
+        # self.send_verification_mail()
 
-    def send_verification_mail(self):
-        """Sending verification email after user signup.
-        """
-        from .mail import MailOutgoing
+    # def send_verification_mail(self):
+    #     """Sending verification email after user signup.
+    #     """
+    #     from .mail import MailOutgoing
+    #
+    #     outgoing_mail = MailOutgoing(
+    #         subject="Verifikasi Pendaftaran User",
+    #         email_to=self.email,
+    #         body=self.VERIFY_BODY.format(self.name, url_for('base.verify',
+    #                                                         verify_code=self.verify_code, _external=True)),
+    #         body_html=self.VERIFY_BODY_HTML.format(self.name,
+    #                                                url_for('base.verify', verify_code=self.verify_code, _external=True))
+    #     )
+    #     outgoing_mail.send_email()
 
-        outgoing_mail = MailOutgoing(
-            subject="Verifikasi Pendaftaran User",
-            email_to=self.email,
-            body=self.VERIFY_BODY.format(self.name, url_for('base.verify',
-                verify_code=self.verify_code, _external=True)),
-            body_html=self.VERIFY_BODY_HTML.format(self.name,
-                url_for('base.verify', verify_code=self.verify_code, _external=True))
-        )
-        outgoing_mail.send_email()
 
 @login_manager.user_loader
 def _user_loader(user_id):

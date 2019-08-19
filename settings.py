@@ -29,6 +29,7 @@ class Configuration:
     except Exception:
         print("[WARNING] Database setting not valid!")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    TABLE_PREFIX = 'cjfa_'
 
     # flask_mail config
     try:
