@@ -6,7 +6,7 @@ from flask_argon2 import Argon2
 from flask_mail import Mail
 from flask_login import LoginManager, current_user
 
-from config import Configuration
+from settings import Configuration
 
 app = Flask(__name__)
 app.config.from_object(Configuration)
